@@ -5983,29 +5983,32 @@ sub ScanFolder
 		@files=($file) if $file;
 	}
 	else {warn "ScanFolder: can't find $dir\n"}
-	#my @toadd;
-	for my $file (@files)
-	{	next if $file=~m#^\.#;		# skip . .. and hidden files/folders
-		my $path_file=$dir.SLASH.$file;
-		#if (-d $path_file) { push @ToScan,$path_file; next; }
-		if (-d $path_file)
-		{	#next if $notrecursive;
-			# make sure it doesn't look in the same dir twice due to symlinks
-			my $real= -l $path_file ? simplify_path(rel2abs(readlink($path_file),$dir)) : $path_file;
-			next if exists $FollowedDirs{$real};
-			$FollowedDirs{$real}=undef;
-			push @ToScan,$path_file;
-			next;
-		}
-		next unless $file=~$ScanRegex;
-		#my $ID=Songs::FindID($path_file);
-		my $ID=$Songs::IDFromFile->{$dir}{$file};
-		if (defined $ID)
-		{	next unless Songs::Get($ID,'missing');
-			Songs::Set($ID,missing => 0);
-			$ToReRead->add($ID);	#or $ToCheck ? 
-			push @ToAdd_IDsBuffer,$ID;
-		}
+
+	if (!grep { $_ eq ".ignoregm" } @files) 
+	{
+		for my $file (@files)		
+		{	next if $file=~m#^\.#;		# skip . .. and hidden files/folders
+			
+			my $path_file=$dir.SLASH.$file;
+			#if (-d $path_file) { push @ToScan,$path_file; next; }
+			if (-d $path_file)
+			{	#next if $notrecursive;
+				# make sure it doesn't look in the same dir twice due to symlinks
+				my $real= -l $path_file ? simplify_path(rel2abs(readlink($path_file),$dir)) : $path_file;
+				next if exists $FollowedDirs{$real};
+				$FollowedDirs{$real}=undef;
+				push @ToScan,$path_file;
+				next;
+			}
+			next unless $file=~$ScanRegex;
+			#my $ID=Songs::FindID($path_file);
+			my $ID=$Songs::IDFromFile->{$dir}{$file};
+			if (defined $ID)
+			{	next unless Songs::Get($ID,'missing');
+				Songs::Set($ID,missing => 0);
+				$ToReRead->add($ID);	#or $ToCheck ? 
+				push @ToAdd_IDsBuffer,$ID;
+			}
 		else
 		{	#$ID=Songs::New($path_file);
 			push @ToAdd_Files, $path_file;
