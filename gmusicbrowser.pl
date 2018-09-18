@@ -5993,7 +5993,6 @@ sub ScanFolder
 	{
 		for my $file (@files)		
 		{	next if $file=~m#^\.#;		# skip . .. and hidden files/folders
-			
 			my $path_file=$dir.SLASH.$file;
 			#if (-d $path_file) { push @ToScan,$path_file; next; }
 			if (-d $path_file)
@@ -6014,11 +6013,12 @@ sub ScanFolder
 				$ToReRead->add($ID);	#or $ToCheck ? 
 				push @ToAdd_IDsBuffer,$ID;
 			}
-		else
-		{	#$ID=Songs::New($path_file);
-			push @ToAdd_Files, $path_file;
+			else
+			{	#$ID=Songs::New($path_file);
+				push @ToAdd_Files, $path_file;
+			}
 		}
-	}
+   }
 	unless (@ToScan)
 	{	AbortScan();
 	}
